@@ -1,0 +1,26 @@
+[{
+        "title": "[HacktheBox] Magic Vault Blockchain Challenge Walkthrough",
+        "date": "Dec 18, 2023",
+        "url": "https://ad3sh.medium.com/hackthebox-magic-vault-challenge-walkthrough-4889ba11c6a6"
+    },
+    {
+        "title": "(HackTheBox) Survival of the Fittest Blockchain Challenge writeup",
+        "date": "Dec 10, 2023",
+        "url": "https://medium.com/bugbountywriteup/hackthebox-survival-of-the-fittest-blockchain-challenge-writeup-e7302c787d20"
+    },
+    {
+        "title": "DoS Vulnerability in Smart Contracts",
+        "date": "May 2, 2021",
+        "url": "https://infosecwriteups.com/dos-vulnerability-in-smart-contracts-f13ee91e142b"
+    },
+    {
+        "title": "Part 1: Hunting Vulnerabilities in Smart Contracts",
+        "date": "Feb 5, 2021",
+        "url": "https://ad3sh.medium.com/part-1-hunting-vulnerabilities-in-smart-contracts-5df00d2575fb"
+    },
+    {
+        "title": "Cross-Site Request Forgery Vulnerability Leads to User Profile Change in Microsoft Express Logic",
+        "date": "Jan 21, 2020",
+        "url": "https://ad3sh.medium.com/cross-site-request-forgery-vulnerability-leads-to-user-profile-change-in-microsoft-express-logic-dc3481ab47ba"
+    }
+]
