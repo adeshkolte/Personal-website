@@ -54,7 +54,7 @@ import {
   
     return (
       <>
-        <NextSeo title="Books | Adam Majmudar" />
+        <NextSeo title="Books | Adesh Kolte" />
         <Stack spacing={5}>
           {books
             .slice()
