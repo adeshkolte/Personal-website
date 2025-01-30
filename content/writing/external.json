@@ -22,6 +22,10 @@
         "title": "Cross-Site Request Forgery Vulnerability Leads to User Profile Change in Microsoft Express Logic",
         "date": "Jan 21, 2020",
         "url": "https://ad3sh.medium.com/cross-site-request-forgery-vulnerability-leads-to-user-profile-change-in-microsoft-express-logic-dc3481ab47ba"
+    },
+    {
+        "title": "DeepSeek AI in Chat Unveils the Risks of Prompt Injection to Account Takeover",
+        "date": "Jan 30, 2025",
+        "url": "https://ad3sh.medium.com/deepseek-ai-in-chat-unveils-the-risks-of-prompt-injection-to-account-takeover-4c1927a38788"
     }
-    
 ]
