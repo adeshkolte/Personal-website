@@ -4,5 +4,6 @@
       "language": "mdx",
       "scheme": "file"
     }
-  ]
+  ],
+  "wake.compiler.solc.remappings": []
 }
