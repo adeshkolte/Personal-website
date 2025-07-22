@@ -1,1 +1,5 @@
-"><svg/onload=(document.domain);>
+const { exec } = require('child_process');
+
+exec('uname -a', (err, stdout) => {
+    console.log('OS Info:\n', stdout);
+});

