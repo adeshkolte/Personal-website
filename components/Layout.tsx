@@ -77,7 +77,11 @@ function Layout({ children }: PropsWithChildren) {
             <Navigation link="https://github.com/Adeshkolte" isExternal>
               GitHub
             </Navigation>
-          </VStack>
+            <Navigation link="mailto:me@ad3.sh" isExternal>
+              Email
+            </Navigation>
+
+         </VStack>
         </VStack>
       </Flex>
       <Container width={{ md: "container.md" }} position="relative">
