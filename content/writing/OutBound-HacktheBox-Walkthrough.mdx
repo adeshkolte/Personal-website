@@ -3,5 +3,28 @@ title: OutBound HacktheBox Walkthrough
 date:  Jul 28, 2025
 ---
 
-# Start Recon
-#Analysis
+Once we got our VPN up with
+
+bash
+Copy
+Edit
+sudo openvpn outbound.ovpn
+we poked at the box with
+
+
+nmap -sC -sV -oN scan.txt 10.10.11.77
+and saw ports 22 (SSH) and 80 (HTTP) open.
+
+In the browser, hitting http://10.10.11.77 redirected us to mail.outbound.htb—so we dropped
+
+
+10.10.11.77  mail.outbound.htb
+into /etc/hosts and reloaded the page. There it was: Roundcube webmail.
+
+On the login page, we spotted credentials right in the prompt:
+
+
+
+tyler / LhKL1o9Nm3X2
+We plugged them in, saw the Roundcube version, and realized it matched CVE‑2025‑49113.
+Cloning the exploit repo and firing it off with our listener ready gave us a shell as www-data:
