@@ -62,3 +62,45 @@ DB User: roundcube
 DB Pass: RCDBPass2025  
 DB Name: roundcube  
 ```
+
+inside the database, I found the tables containing users and sessions. Although the users table didn’t contain any passwords, the sessions table looked promising.
+ I discovered these tables after running the SQL command SHOW TABLES;, which helped me quickly determine what to examine further.
+
+```bash
+mysql -u roundcube -pRCDBPass2025 roundcube
+SHOW TABLES;
+SELECT * FROM session;
+
+```
+The session data caught my attention because it was encoded in Base64, indicating that I'd need to decode it to find anything useful.
+![Base64](/sessions.png)
+
+I proceeded to decode the session data, and upon decoding it, I obtained the following output:
+![carbon](/carbon.png)
+
+First, I decoded the session data using CyberChef.io, 
+
+![decode](/decode.png)
+
+
+carefully going through each entry one at a time. While decoding, I initially came across Tyler's credentials, which I already had, so I continued searching.
+
+ Soon after, I discovered Jacob's session data, which contained an encrypted password—exactly what I was looking for.
+
+To clearly view the decoded data, I first decoded the session using CyberChef’s Base64 decode operation with the "Y64" option.
+
+The next step was decrypting Jacob's password. Previously, I had located an encryption key (rcmail-!24ByteDESkey*Str) in the config.inc.php file, which was crucial for this task.
+
+After doing some additional research, I learned that Roundcube employs the Triple DES (DES-EDE3-CBC) encryption method.
+
+Equipped with this information, I converted Jacob's Base64-encoded session data into Hex format and then successfully decrypted it with Triple DES using CyberChef.
+and i got the access using password then 
+
+![jacobpass](/jacobpass.png)
+
+after this we found ssh login ssh jacob@10.10.11.77 and his password to ssh  gY4Wr3a1evp4 
+
+![userflag](/userflag.png)
+
+and we successfully found user flag here :)
+
